@@ -42,7 +42,7 @@ class CalculadoraAcero(tk.Tk):
         self.calcular_button = tk.Button(self, text="Calcular Acero", command=self._calcular_acero)
 
         for i in range(4):
-            label = tk.Label(self, text="", font=("Helvetica", 12))
+            label = tk.Label(self, text="", font=("Helvetica", 11))
             self.result_labels.append(label)
 
     def _organizar_elementos(self):
