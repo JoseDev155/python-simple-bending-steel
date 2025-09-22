@@ -1,76 +1,74 @@
 import tkinter as tk
-from flexion import *
+from tkinter import messagebox
+from flexion import calculoFlexion
 
-def calcularAcero():
-    # Obtener los valores ingresados por el usuario
-    valor1 = float(entry1.get())
-    valor2 = float(entry2.get())
-    valor3 = float(entry3.get())
-    valor4 = float(entry4.get())
-    valor5 = float(entry5.get())
-    valor6 = float(entry6.get())
-    valores = calculoFlexion(valor1, valor2, valor3, valor4, valor5, valor6)
+class CalculadoraAcero(tk.Tk):
+    """
+    Clase para la interfaz gráfica de la calculadora de acero en Tkinter.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.title("Cálculo de Acero en Vigas de Concreto")
+        self.geometry("600x600")
+
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        
+        self.entries = {}
+        self.result_labels = []
+
+        self._crear_widgets()
+        self._organizar_elementos()
     
-    for i in range(len(valores)):
-        etiquetas_resultado[i].config(text=valores[i])
+    def _crear_widgets(self):
+        """Crea todos los widgets de la interfaz."""
+        label_text = [
+            "Ancho (b) [m]:",
+            "Altura (h) [m]:",
+            "Recubrimiento al eje [m]:",
+            "Resistencia del concreto (fc') [MPa]:",
+            "Resistencia del acero (fy) [MPa]:",
+            "Momento último (Mu) [kN-m]:"
+        ]
 
-# Crear la ventana
-ventana = tk.Tk()
-ventana.title("Calculadora de Acero por flexión simple")
+        for i, text in enumerate(label_text):
+            label = tk.Label(self, text=text)
+            entry = tk.Entry(self)
+            self.entries[text] = entry
+            label.grid(row=i, column=0, padx=10, pady=5, sticky="e")
+            entry.grid(row=i, column=1, padx=10, pady=5, sticky="w")
+        
+        self.calcular_button = tk.Button(self, text="Calcular Acero", command=self._calcular_acero)
 
-# Crear las etiquetas y los campos de entrada
-label1 = tk.Label(ventana, text="b [m]:")
-label1.pack()
-entry1 = tk.Entry(ventana)
-entry1.pack()
+        for i in range(4):
+            label = tk.Label(self, text="", font=("Helvetica", 12))
+            self.result_labels.append(label)
 
-label2 = tk.Label(ventana, text="h [m]:")
-label2.pack()
-entry2 = tk.Entry(ventana)
-entry2.pack()
+    def _organizar_elementos(self):
+        """Organiza los widgets en la ventana principal."""
+        self.calcular_button.grid(row=len(self.entries), columnspan=2, pady=20)
+        
+        for i, label in enumerate(self.result_labels):
+            label.grid(row=len(self.entries) + 1 + i, columnspan=2)
 
-label3 = tk.Label(ventana, text="recub. al eje [m]:")
-label3.pack()
-entry3 = tk.Entry(ventana)
-entry3.pack()
+    def _calcular_acero(self):
+        """Maneja el cálculo y la actualización de la interfaz."""
+        try:
+            valores = [float(entry.get()) for entry in self.entries.values()]
+            
+            resultados = calculoFlexion(*valores)
+            
+            for i in range(len(self.result_labels)):
+                if i < len(resultados):
+                    self.result_labels[i].config(text=f"{resultados[i]}")
+                else:
+                    self.result_labels[i].config(text="")
+        except ValueError:
+            messagebox.showerror("Error de entrada", "Asegúrate de ingresar valores numéricos válidos en todos los campos.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Ocurrió un error en el cálculo: {e}")
 
-label4 = tk.Label(ventana, text="fc' [MPa]:")
-label4.pack()
-entry4 = tk.Entry(ventana)
-entry4.pack()
-
-label5 = tk.Label(ventana, text="fy [MPa]:")
-label5.pack()
-entry5 = tk.Entry(ventana)
-entry5.pack()
-
-label6 = tk.Label(ventana, text="Mu [KN-m]:")
-label6.pack()
-entry6 = tk.Entry(ventana)
-entry6.pack()
-
-# Crear el botón para calcular la suma
-boton_sumar = tk.Button(ventana, text="Calcular Acero", command=calcularAcero)
-boton_sumar.pack()
-
-# Crear la etiqueta para mostrar el resultado
-etiqueta_resultado1 = tk.Label(ventana, text="")
-etiqueta_resultado1 = tk.Label(ventana, text="")
-etiqueta_resultado1.pack()
-etiqueta_resultado2 = tk.Label(ventana, text="")
-etiqueta_resultado2.pack()
-etiqueta_resultado3 = tk.Label(ventana, text="")
-etiqueta_resultado3.pack()
-etiqueta_resultado4 = tk.Label(ventana, text="")
-etiqueta_resultado4.pack()
-
-# Lista de etiquetas de resultado para fácil acceso
-etiquetas_resultado = [
-    etiqueta_resultado1,
-    etiqueta_resultado2,
-    etiqueta_resultado3,
-    etiqueta_resultado4
-]
-
-# Ejecutar la ventana
-ventana.mainloop()
+if __name__ == "__main__":
+    app = CalculadoraAcero()
+    app.mainloop()
