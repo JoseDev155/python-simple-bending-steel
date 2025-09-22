@@ -16,7 +16,7 @@ def calcularAcero():
 
 # Crear la ventana
 ventana = tk.Tk()
-ventana.title("")
+ventana.title("Calculadora de Acero por flexión simple")
 
 # Crear las etiquetas y los campos de entrada
 label1 = tk.Label(ventana, text="b [m]:")
